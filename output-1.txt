@@ -1,0 +1,15 @@
+Image 0
+Right-of-way at the next intersection: 0.454
+No vechiles: 0.307
+Dangerous curve to the right: 0.116
+Go straight or right: 0.042
+Ahead only: 0.034
+
+Image 1
+Turn left ahead: 0.974
+Keep right: 0.021
+Speed limit (30km/h): 0.003
+Dangerous curve to the right: 0.002
+Ahead only: 0.000
+
+Time: 0.376 seconds

@@ -1,22 +1,57 @@
 import pickle
 import tensorflow as tf
+import pandas as pd
 from sklearn.model_selection import train_test_split
 from alexnet import AlexNet
 
 # TODO: Load traffic signs data.
+import pickle
 
-# TODO: Split data into training and validation sets.
+# Load training, validation, and test datasets via pickle.
+training_file = 'input_data/train.p'
+validation_file='input_data/valid.p'
+testing_file = 'input_data/test.p'
+
+with open(training_file, mode='rb') as f:
+    train = pickle.load(f)
+with open(validation_file, mode='rb') as f:
+    valid = pickle.load(f)
+with open(testing_file, mode='rb') as f:
+    test = pickle.load(f)
+    
+# Map to convenient globals
+X_train, y_train = train['features'], train['labels']
+X_valid, y_valid = valid['features'], valid['labels']
+X_test, y_test = test['features'], test['labels']
+
+# Check dimension assumptions
+assert(len(X_train) == len(y_train))
+assert(len(X_valid) == len(y_valid))
+assert(len(X_test) == len(y_test))
 
 # TODO: Define placeholders and resize operation.
+sign_names = pd.read_csv('signnames.csv')
+nb_classes = 43
+keep = 0.5
+
+x = tf.placeholder(tf.float32, (None, 32, 32, 3))
+resized = tf.image.resize_images(x, (227, 227))
 
 # TODO: pass placeholder as first argument to `AlexNet`.
-fc7 = AlexNet(..., feature_extract=True)
+fc7 = AlexNet(resized, feature_extract=True)
 # NOTE: `tf.stop_gradient` prevents the gradient from flowing backwards
 # past this point, keeping the weights before and up to `fc7` frozen.
 # This also makes training faster, less work to do!
 fc7 = tf.stop_gradient(fc7)
 
+fc_dropout = tf.nn.dropout(fc7, keep)
+
 # TODO: Add the final layer for traffic sign classification.
+shape = (fc_dropout.get_shape().as_list()[-1], nb_classes)  # use this shape for the weight matrix
+fc_new_1 = tf.Variable(tf.truncated_normal(shape=shape, mean = 0.0, stddev = 0.1))
+fc_new_2 = tf.Variable(tf.zeros(nb_classes))
+fc_new_3 = tf.add(tf.matmul(fc_dropout, fc_new_1),fc_new_2)
+probs = tf.nn.softmax(fc_new_3)
 
 # TODO: Define loss, training, accuracy operations.
 # HINT: Look back at your traffic signs project solution, you may
