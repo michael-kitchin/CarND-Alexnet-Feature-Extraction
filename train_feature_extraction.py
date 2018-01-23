@@ -32,10 +32,11 @@ nb_classes = 43
 batch_size = 128
 keep_probability = 0.5
 
+x = tf.placeholder(tf.float32, (None, 32, 32, 3))
 x_tensor = tf.placeholder(tf.float32, (None, 32, 32, 3))
-y_tensor = tf.placeholder(tf.int32, (None))
-resized = tf.image.resize_images(x_tensor, (227, 227))
-keep = tf.placeholder_with_default(1.0,shape=(None))
+y_tensor = tf.placeholder(tf.int32, None)
+resized = tf.image.resize_images(x, (227, 227))
+keep = tf.placeholder_with_default(1.0, shape=None)
 
 # TODO: pass placeholder as first argument to `AlexNet`.
 fc7 = AlexNet(resized, feature_extract=True)
