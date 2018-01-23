@@ -46,7 +46,7 @@ learning_rate = 0.0013
 
 # x = tf.placeholder(tf.float32, (None, 32, 32, 3))
 x_tensor = tf.placeholder(tf.float32, (None, 32, 32, 3))
-y_tensor = tf.placeholder(tf.int32, None)
+y_tensor = tf.placeholder(tf.int64, None)
 resized = tf.image.resize_images(x_tensor, (227, 227))
 keep = tf.placeholder_with_default(1.0, shape=None)
 
