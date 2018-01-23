@@ -42,6 +42,7 @@ print("Number of classes =", nb_classes)
 sign_names = pd.read_csv('signnames.csv')
 batch_size = 128
 keep_probability = 0.5
+learning_rate = 0.0013
 
 # x = tf.placeholder(tf.float32, (None, 32, 32, 3))
 x_tensor = tf.placeholder(tf.float32, (None, 32, 32, 3))
@@ -61,21 +62,18 @@ fc_dropout = tf.nn.dropout(fc7, keep)
 shape = (fc_dropout.get_shape().as_list()[-1], nb_classes)  # use this shape for the weight matrix
 fc_new_1 = tf.Variable(tf.truncated_normal(shape=shape, mean = 0.0, stddev = 0.1))
 fc_new_2 = tf.Variable(tf.zeros(nb_classes))
-fc_new_3 = tf.add(tf.matmul(fc_dropout, fc_new_1),fc_new_2)
-logits = tf.nn.softmax(fc_new_3)
+logits = tf.add(tf.matmul(fc_dropout, fc_new_1),fc_new_2)
 
 # TODO: Define loss, training, accuracy operations.
 # HINT: Look back at your traffic signs project solution, you may
 # be able to reuse some the code.
-
-one_hot_y = tf.one_hot(y_tensor,nb_classes)
-cross_entropy = tf.nn.softmax_cross_entropy_with_logits(labels=one_hot_y,logits=logits)
+cross_entropy = tf.nn.softmax_cross_entropy_with_logits(labels=y_tensor,logits=logits)
 loss_operation = tf.reduce_mean(cross_entropy)
-optimizer = tf.train.AdamOptimizer(learning_rate=0.0013)
+optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
 
 training_operation = optimizer.minimize(loss_operation)
-correct_prediction = tf.equal(tf.argmax(logits, 1), tf.argmax(one_hot_y, 1))
-accuracy_operation = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+prediction_operation = tf.argmax(logits, 1)
+accuracy_operation = tf.reduce_mean(tf.cast(tf.equal(prediction_operation, y_tensor), tf.float32))
 
 # TODO: Train and evaluate the feature extraction model.
 num_examples = len(X_train)
