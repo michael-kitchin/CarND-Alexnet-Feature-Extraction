@@ -32,8 +32,9 @@ nb_classes = 43
 batch_size = 128
 keep_probability = 0.5
 
-x = tf.placeholder(tf.float32, (None, 32, 32, 3))
-resized = tf.image.resize_images(x, (227, 227))
+x_tensor = tf.placeholder(tf.float32, (None, 32, 32, 3))
+y_tensor = tf.placeholder(tf.int32, (None))
+resized = tf.image.resize_images(x_tensor, (227, 227))
 keep = tf.placeholder_with_default(1.0,shape=(None))
 
 # TODO: pass placeholder as first argument to `AlexNet`.
@@ -54,8 +55,6 @@ logits = tf.nn.softmax(fc_new_3)
 # TODO: Define loss, training, accuracy operations.
 # HINT: Look back at your traffic signs project solution, you may
 # be able to reuse some the code.
-x_tensor = tf.placeholder(tf.float32, (None, 32, 32, 3))
-y_tensor = tf.placeholder(tf.int32, (None))
 
 one_hot_y = tf.one_hot(y_tensor,nb_classes)
 cross_entropy = tf.nn.softmax_cross_entropy_with_logits(labels=one_hot_y,logits=logits)
