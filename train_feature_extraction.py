@@ -68,9 +68,9 @@ accuracy_operation = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 # TODO: Train and evaluate the feature extraction model.
 num_examples = len(X_train)
-sess = tf.get_default_session()
-for offset in range(0,num_examples,batch_size):
-    end = offset+batch_size
-    batch_x, batch_y = X_train[offset:end],y_train[offset:end]
-    sess.run(training_operation,
-             feed_dict={x_tensor:batch_x,y_tensor:batch_y,keep:keep_probability})
+with tf.Session() as sess:
+    for offset in range(0,num_examples,batch_size):
+        end = offset+batch_size
+        batch_x, batch_y = X_train[offset:end],y_train[offset:end]
+        sess.run(training_operation,
+                 feed_dict={x_tensor:batch_x,y_tensor:batch_y,keep:keep_probability})
