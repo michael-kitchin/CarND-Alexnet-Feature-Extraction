@@ -26,16 +26,27 @@ assert(len(X_train) == len(y_train))
 assert(len(X_valid) == len(y_valid))
 assert(len(X_test) == len(y_test))
 
+image_shape_raw = X_train[0].shape
+arr_shape_raw = X_train.shape
+set_classes = set(y_train)
+nb_classes = len(set_classes)
+
+print("Number of training examples =", len(X_train))
+print("Number of validation examples =", len(X_valid))
+print("Number of testing examples =", len(X_test))
+print("Image data shape =", image_shape_raw)
+print("Array data shape =", arr_shape_raw)
+print("Number of classes =", nb_classes)
+
 # TODO: Define placeholders and resize operation.
 sign_names = pd.read_csv('signnames.csv')
-nb_classes = 43
 batch_size = 128
 keep_probability = 0.5
 
-x = tf.placeholder(tf.float32, (None, 32, 32, 3))
+# x = tf.placeholder(tf.float32, (None, 32, 32, 3))
 x_tensor = tf.placeholder(tf.float32, (None, 32, 32, 3))
 y_tensor = tf.placeholder(tf.int32, None)
-resized = tf.image.resize_images(x, (227, 227))
+resized = tf.image.resize_images(x_tensor, (227, 227))
 keep = tf.placeholder_with_default(1.0, shape=None)
 
 # TODO: pass placeholder as first argument to `AlexNet`.
@@ -68,6 +79,7 @@ accuracy_operation = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 # TODO: Train and evaluate the feature extraction model.
 num_examples = len(X_train)
+
 with tf.Session() as sess:
     for offset in range(0,num_examples,batch_size):
         end = offset+batch_size
