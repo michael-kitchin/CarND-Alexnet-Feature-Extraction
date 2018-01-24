@@ -61,6 +61,8 @@ fc7_dropout = tf.nn.dropout(fc7, keep_tensor)
 
 # TODO: Add the final layer for traffic sign classification.
 fc7_shape = (fc7_dropout.get_shape().as_list()[-1], nb_classes)  # use this shape for the weight matrix
+print("fc7_dropout:", (fc7_dropout.get_shape().as_list()[-1], nb_classes))
+print("fc7:", (fc7.get_shape().as_list()[-1], nb_classes))
 fc_new_W = tf.Variable(tf.truncated_normal(shape=fc7_shape, mean = 0.0, stddev = 0.1))
 fc_new_b = tf.Variable(tf.zeros(nb_classes))
 logits = tf.nn.xw_plus_b(fc7_dropout, fc_new_W, fc_new_b)
