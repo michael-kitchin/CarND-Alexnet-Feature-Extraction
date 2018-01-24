@@ -2,6 +2,7 @@ import pickle
 import tensorflow as tf
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from sklearn.utils import shuffle
 from alexnet import AlexNet
 
 # Load training, validation, and test datasets via pickle.
@@ -47,16 +48,16 @@ learning_rate = 0.0013
 # x = tf.placeholder(tf.float32, (None, 32, 32, 3))
 images_tensor = tf.placeholder(tf.float32, (None, 32, 32, 3))
 labels_tensor = tf.placeholder(tf.int64, None)
-resized = tf.image.resize_images(images_tensor, (227, 227))
-keep = tf.placeholder_with_default(1.0, shape=None)
+resized_tensor = tf.image.resize_images(images_tensor, (227, 227))
+keep_tensor = tf.placeholder_with_default(1.0, shape=None)
 
 # TODO: pass placeholder as first argument to `AlexNet`.
-fc7 = AlexNet(resized, feature_extract=True)
+fc7 = AlexNet(resized_tensor, feature_extract=True)
 # NOTE: `tf.stop_gradient` prevents the gradient from flowing backwards
 # past this point, keeping the weights before and up to `fc7` frozen.
 # This also makes training faster, less work to do!
 fc7 = tf.stop_gradient(fc7)
-fc7_dropout = tf.nn.dropout(fc7, keep)
+fc7_dropout = tf.nn.dropout(fc7, keep_tensor)
 
 # TODO: Add the final layer for traffic sign classification.
 fc7_shape = (fc7_dropout.get_shape().as_list()[-1], nb_classes)  # use this shape for the weight matrix
@@ -72,17 +73,19 @@ loss_operation = tf.reduce_mean(cross_entropy_operation)
 optimizer_operation = tf.train.AdamOptimizer(learning_rate=learning_rate)
 
 training_operation = optimizer_operation.minimize(loss_operation, var_list=[fc_new_W, fc_new_b])
-init_operation = tf.initialize_all_variables()
+init_operation = tf.global_variables_initializer()
 
 prediction_operation = tf.argmax(logits, 1)
 accuracy_operation = tf.reduce_mean(tf.cast(tf.equal(prediction_operation, labels_tensor), tf.float32))
 
 # TODO: Train and evaluate the feature extraction model.
-num_examples = len(X_train)
 with tf.Session() as sess:
+    X_train, y_train = shuffle(X_train, y_train)
+    num_examples = len(X_train)
+
     sess.run(init_operation)
     for offset in range(0,num_examples,batch_size):
         end = offset+batch_size
-        batch_x, batch_y = X_train[offset:end],y_train[offset:end]
+        batch_X, batch_y = X_train[offset:end], y_train[offset:end]
         sess.run(training_operation,
-                 feed_dict={images_tensor:batch_x, labels_tensor:batch_y, keep:keep_probability})
+                 feed_dict={images_tensor:batch_X, labels_tensor:batch_y, keep_tensor:keep_probability})
